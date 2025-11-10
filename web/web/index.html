@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Ưng dụng Download multiple files </title>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2> ứng dụng download multi file </h2>
+
+        <div class="tab-container">
+            <button class="tab-link active" data-tab="download-tab">Tải xuống (Download)</button>
+        </div>
+
+        <div id="download-tab" class="tab-content active">
+            <div class="server-file-list-container">
+                
+                <div class="download-controls">
+                    <button id="refresh-files-button">Làm mới DS</button>
+                    <button id="download-selected-button">Tải mục đã chọn</button>
+                    <button id="delete-selected-button">Xóa mục đã chọn</button>
+                </div>
+
+                <p>Đây là các tệp hiện có trên server:</p>
+                <div id="server-file-list">
+                    </div>
+            </div>
+        </div>
+        <h3>Danh sách Tác vụ</h3>
+        <div id="progress-list"></div>
+        
+        <div class="history-header">
+            <h3>Thông báo & Lịch sử</h3>
+            <button id="clear-history-button" type="button">Xóa Lịch sử</button>
+        </div>
+        <div id="history-area">
+            <div>Chưa có thông báo nào.</div>
+        </div>
+    </div>
+    
+    <script src="script.js" defer></script>
+</body>
+</html>
