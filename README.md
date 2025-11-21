@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 ````
 
-*(File `requirements.txt` bao gồm: `Flask`, `flask-cors`)*
+
 
 ### Bước 2: Khởi chạy Server
 
