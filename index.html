@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Download Files</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: system-ui, sans-serif; }
+    body { background: #f5f7fa; padding: 20px; color: #333; }
+    .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #5a67d8; margin-bottom: 15px; }
+    h3 { margin: 18px 0 8px; color: #4a5568; font-size: 16px; }
+
+    /* Danh sách file server */
+    #server-file-list { max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #fdfdfe; }
+    .file-item { padding: 8px 10px; margin: 3px 0; background: #ebf8ff; border-radius: 6px; cursor: grab; user-select: none; display: flex; align-items: center; gap: 8px; }
+    .file-item:hover { background: #bee3f8; }
+
+    /* Nút điều khiển */
+    .controls { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
+    .controls button { padding: 8px 14px; background: #5a67d8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    .controls button:hover { background: #4c51bf; }
+
+    /* Danh sách tác vụ */
+    #progress-list { margin-bottom: 15px; }
+    .task-item { background: #f8f9ff; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #5a67d8; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .task-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .task-status { font-weight: 600; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
+    .status-downloading { background: #bee3f8; color: #1e40af; }
+    .status-success { background: #c6f6d5; color: #22543d; }
+    .status-error { background: #fed7d7; color: #9b2c2c; }
+    .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; flex: 1; margin: 0 10px; }
+    .progress-fill { height: 100%; background: #5a67d8; width: 0%; transition: width 0.3s; }
+
+    /* Vùng kéo thả + loading bar */
+    .drop-container { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .drop-zone {
+      flex: 1; border: 2px dashed #5a67d8; border-radius: 8px; padding: 16px; text-align: center; background: #f8f9ff; cursor: pointer; transition: 0.3s;
+      font-size: 15px; color: #5a67d8; font-weight: 500;
+    }
+    .drop-zone.drag-over { background: #e6f7ff; border-color: #3182ce; transform: scale(1.01); }
+    .loading-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; width: 120px; }
+    .loading-fill { height: 100%; background: #5a67d8; width: 0%; transition: width 0.3s; }
+
+    /* Lịch sử */
+    #history-area { max-height: 100px; overflow-y: auto; background: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 13px; line-height: 1.5; }
+    #clear-history-button { background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Download Files</h2>
+
+  <!-- Danh sách file server -->
+  <div class="controls">
+    <button id="refresh-btn">Làm mới</button>
+    <button id="download-selected">Tải đã chọn</button>
+    <button id="delete-selected">Xóa</button>
+  </div>
+  <div id="server-file-list"></div>
+
+  <!-- Danh sách tác vụ -->
+  <h3>Danh sách Tác vụ</h3>
+  <div id="progress-list"></div>
+
+  <!-- Vùng kéo thả + thanh loading -->
+  <div class="drop-container">
+    <div class="drop-zone" id="dropZone">
+      Kéo file .txt vào đây để tải hàng loạt
+      <input type="file" id="fileInput" accept=".txt" hidden>
+    </div>
+    <div class="loading-bar"><div class="loading-fill" id="global-loading"></div></div>
+  </div>
+
+  <!-- Lịch sử -->
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
+    <h3>Thông báo</h3>
+    <button id="clear-history-button">Xóa</button>
+  </div>
+  <div id="history-area"><div>Chưa có thông báo.</div></div>
+</div>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const progressList = document.getElementById('progress-list');
+  const historyArea = document.getElementById('history-area');
+  const serverList = document.getElementById('server-file-list');
+  const globalLoading = document.getElementById('global-loading');
+  let activeDownloads = 0;
+
+  // === Kéo thả ===
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
+    dropZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); });
+  });
+  ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('drag-over')));
+  ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('drag-over')));
+
+  dropZone.addEventListener('drop', e => {
+    const files = e.dataTransfer.files;
+    if (files.length) handleFiles(files);
+    const name = e.dataTransfer.getData('text/plain');
+    if (name) downloadFile(name);
+  });
+  dropZone.onclick = () => fileInput.click();
+  fileInput.onchange = e => handleFiles(e.target.files);
+
+  function handleFiles(files) {
+    Array.from(files).filter(f => f.name.endsWith('.txt')).forEach(readTxt);
+    fileInput.value = '';
+  }
+
+  function readTxt(file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const names = e.target.result.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
+      names.forEach(downloadFile);
+      log(`Tải ${names.length} file từ ${file.name}`);
+    };
+    reader.readAsText(file);
+  }
+
+  // === Tải file ===
+  function downloadFile(filename) {
+    activeDownloads++;
+    updateGlobalLoading();
+    const id = 'dl-' + Date.now();
+    const item = document.createElement('div');
+    item.className = 'task-item';
+    item.id = id;
+    item.innerHTML = `<div class="task-name">${filename}</div>
+                      <div class="progress-bar"><div class="progress-fill"></div></div>
+                      <div class="task-status status-downloading">Đang tải</div>`;
+    progressList.appendChild(item);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', `http://127.0.0.1:5000/download/${encodeURIComponent(filename)}`, true);
+    xhr.responseType = 'blob';
+
+    xhr.onprogress = e => {
+      if (e.lengthComputable) {
+        const pct = (e.loaded / e.total) * 100;
+        item.querySelector('.progress-fill').style.width = pct + '%';
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status === 200) {
+        const url = URL.createObjectURL(xhr.response);
+        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        URL.revokeObjectURL(url);
+        done(id, 'success', 'Hoàn tất');
+        log(`Tải thành công: ${filename}`);
+      } else {
+        done(id, 'error', 'Lỗi');
+        log(`Tải thất bại: ${filename}`);
+      }
+      activeDownloads--;
+      updateGlobalLoading();
+      setTimeout(() => item.remove(), 2000);
+    };
+
+    xhr.onerror = () => { done(id, 'error', 'Lỗi mạng'); activeDownloads--; updateGlobalLoading(); };
+    xhr.send();
+  }
+
+  function done(id, status, text) {
+    const el = document.getElementById(id);
+    if (el) {
+      el.querySelector('.task-status').className = `task-status status-${status}`;
+      el.querySelector('.task-status').textContent = text;
+      el.querySelector('.progress-fill').style.width = status === 'success' ? '100%' : '0%';
+    }
+  }
+
+  function updateGlobalLoading() {
+    const pct = activeDownloads > 0 ? 50 + Math.random() * 30 : 0;
+    globalLoading.style.width = pct + '%';
+  }
+
+  // === Load danh sách file ===
+  async function loadFiles() {
+    try {
+      const res = await fetch('http://127.0.0.1:5000/files');
+      const files = await res.json();
+      serverList.innerHTML = '';
+      files.forEach(f => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.draggable = true;
+        div.dataset.name = f;
+        div.innerHTML = `<input type="checkbox" value="${f}"><span>${f}</span>`;
+        div.ondragstart = e => e.dataTransfer.setData('text/plain', f);
+        serverList.appendChild(div);
+      });
+    } catch { log('Lỗi kết nối server'); }
+  }
+
+  // === Nút điều khiển ===
+  document.getElementById('refresh-btn').onclick = loadFiles;
+  document.getElementById('download-selected').onclick = () => {
+    const selected = [...document.querySelectorAll('input:checked')].map(c => c.value);
+    if (!selected.length) return log('Chưa chọn file');
+    selected.forEach(downloadFile);
+  };
+  document.getElementById('delete-selected').onclick = async () => {
+    const selected = [...document.querySelectorAll('input:checked')].map(c => c.value);
+    if (!selected.length || !confirm(`Xóa ${selected.length} file?`)) return;
+    await fetch('http://127.0.0.1:5000/delete', {
+      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({files: selected})
+    });
+    loadFiles();
+    log(`Đã xóa ${selected.length} file`);
+  };
+  document.getElementById('clear-history-button').onclick = () => {
+    historyArea.innerHTML = '<div>Chưa có thông báo.</div>';
+  };
+
+  function log(msg) {
+    const d = document.createElement('div');
+    d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    historyArea.appendChild(d);
+    historyArea.scrollTop = historyArea.scrollHeight;
+    if (historyArea.children.length > 30) historyArea.children[0].remove();
+  }
+
+  // Khởi động
+  loadFiles();
+  setInterval(loadFiles, 8000);
+</script>
+
+</body>
+</html>

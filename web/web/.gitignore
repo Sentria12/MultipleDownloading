@@ -1,7 +1,0 @@
-# Bỏ qua thư mục môi trường ảo
-venv/
-
-# (Bạn cũng có thể thêm các tệp/thư mục khác mà bạn không muốn đẩy lên)
-# Ví dụ:
-# __pycache__/
-# *.pyc
