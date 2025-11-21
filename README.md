@@ -2,7 +2,7 @@
 
 Đây là ứng dụng mô phỏng hệ thống tải file đa luồng sử dụng **Flask (Python)** và **Vanilla JavaScript**. Ứng dụng tập trung vào kỹ thuật xử lý bất đồng bộ (Asynchronous) và giao diện tương tác Kéo-Thả (Drag & Drop).
 
-## 🚀 Tính năng nổi bật (Đúng yêu cầu đồ án)
+## 🚀 Tính năng nổi bật 
 
 1.  **Giao diện Kéo & Thả (Drag & Drop):**
     * Người dùng kéo file trực tiếp từ danh sách Server và thả vào vùng "Hàng đợi" (Queue) để chuẩn bị tải.
