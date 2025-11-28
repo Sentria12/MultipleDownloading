@@ -11,40 +11,49 @@
     h2 { text-align: center; color: #5a67d8; margin-bottom: 15px; }
     h3 { margin: 18px 0 8px; color: #4a5568; font-size: 16px; }
 
-    /* Danh sách file server */
     #server-file-list { max-height: 200px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #fdfdfe; }
-    .file-item { padding: 8px 10px; margin: 3px 0; background: #ebf8ff; border-radius: 6px; cursor: grab; user-select: none; display: flex; align-items: center; gap: 8px; }
+    .file-item { padding: 8px 10px; margin: 3px 0; background: #ebf8ff; border-radius: 6px; cursor: grab; display: flex; align-items: center; justify-content: space-between; }
     .file-item:hover { background: #bee3f8; }
+    .file-info { display: flex; align-items: center; gap: 8px; flex: 1; }
+    .file-size { font-size: 12px; color: #718096; background: #edf2f7; padding: 2px 6px; border-radius: 4px; }
 
-    /* Nút điều khiển */
     .controls { display: flex; gap: 8px; margin: 10px 0; flex-wrap: wrap; }
     .controls button { padding: 8px 14px; background: #5a67d8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
     .controls button:hover { background: #4c51bf; }
 
-    /* Danh sách tác vụ */
-    #progress-list { margin-bottom: 15px; }
-    .task-item { background: #f8f9ff; padding: 10px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #5a67d8; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
-    .task-name { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .task-status { font-weight: 600; font-size: 12px; padding: 2px 8px; border-radius: 10px; }
-    .status-downloading { background: #bee3f8; color: #1e40af; }
-    .status-success { background: #c6f6d5; color: #22543d; }
-    .status-error { background: #fed7d7; color: #9b2c2c; }
-    .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; flex: 1; margin: 0 10px; }
-    .progress-fill { height: 100%; background: #5a67d8; width: 0%; transition: width 0.3s; }
-
-    /* Vùng kéo thả + loading bar */
     .drop-container { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
     .drop-zone {
-      flex: 1; border: 2px dashed #5a67d8; border-radius: 8px; padding: 16px; text-align: center; background: #f8f9ff; cursor: pointer; transition: 0.3s;
-      font-size: 15px; color: #5a67d8; font-weight: 500;
+      flex: 1; border: 2px dashed #5a67d8; border-radius: 8px; padding: 16px; text-align: center;
+      background: #f8f9ff; transition: 0.3s;
+      font-size: 15px; color: #5a67d8; font-weight: 500; min-height: 80px;
     }
     .drop-zone.drag-over { background: #e6f7ff; border-color: #3182ce; transform: scale(1.01); }
+
+    #queued-files { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .queued-item { background: #bee3f8; padding: 4px 10px; border-radius: 12px; font-size: 12px; color: #1e40af; display: flex; align-items: center; gap: 6px; }
+
     .loading-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; width: 120px; }
     .loading-fill { height: 100%; background: #5a67d8; width: 0%; transition: width 0.3s; }
 
-    /* Lịch sử */
-    #history-area { max-height: 100px; overflow-y: auto; background: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 13px; line-height: 1.5; }
+    #history-area { max-height: 200px; overflow-y: auto; background: #f9f9f9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 13px; line-height: 1.5; }
     #clear-history-button { background: #e53e3e; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; }
+    
+    /* Task item styles */
+    .task-item { padding: 10px; margin: 5px 0; background: #f7fafc; border-radius: 6px; border-left: 3px solid #5a67d8; }
+    .task-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .task-name { font-weight: 500; color: #2d3748; flex: 1; }
+    .task-size-info { font-size: 12px; color: #718096; margin-left: 10px; }
+    .progress-container { display: flex; align-items: center; gap: 12px; margin: 5px 0; }
+    .progress-bar { flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, #5a67d8, #4c51bf); width: 0%; transition: width 0.3s; }
+    .progress-text { font-size: 11px; color: #4a5568; min-width: 80px; text-align: right; }
+    .task-status { font-size: 12px; color: #718096; margin-top: 3px; }
+
+    /* Notification styles */
+    .notification { margin-bottom: 5px; padding: 3px 0; border-bottom: 1px solid #e2e8f0; }
+    .notification:last-child { border-bottom: none; }
+
+    .total-size { font-size: 12px; color: #718096; margin-left: 8px; }
   </style>
 </head>
 <body>
@@ -52,28 +61,32 @@
 <div class="container">
   <h2>Download Files</h2>
 
-  <!-- Danh sách file server -->
   <div class="controls">
     <button id="refresh-btn">Làm mới</button>
     <button id="download-selected">Tải đã chọn</button>
-    <button id="delete-selected">Xóa</button>
   </div>
+
   <div id="server-file-list"></div>
 
-  <!-- Danh sách tác vụ -->
   <h3>Danh sách Tác vụ</h3>
   <div id="progress-list"></div>
 
-  <!-- Vùng kéo thả + thanh loading -->
   <div class="drop-container">
     <div class="drop-zone" id="dropZone">
-      Kéo file .txt vào đây để tải hàng loạt
+      <div id="drop-zone-content">Kéo file .txt hoặc file từ danh sách vào đây</div>
+      <div id="queued-files"></div>
       <input type="file" id="fileInput" accept=".txt" hidden>
     </div>
-    <div class="loading-bar"><div class="loading-fill" id="global-loading"></div></div>
+    <div class="loading-bar">
+      <div class="loading-fill" id="global-loading"></div>
+    </div>
   </div>
 
-  <!-- Lịch sử -->
+  <div class="controls" style="margin-top: 10px;">
+    <button id="download-queued">Tải hàng đợi (<span id="queue-count">0</span>)</button>
+    <button id="clear-queued" style="background: #e53e3e;">Xóa hàng đợi</button>
+  </div>
+
   <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
     <h3>Thông báo</h3>
     <button id="clear-history-button">Xóa</button>
@@ -82,152 +95,483 @@
 </div>
 
 <script>
-  const dropZone = document.getElementById('dropZone');
-  const fileInput = document.getElementById('fileInput');
-  const progressList = document.getElementById('progress-list');
-  const historyArea = document.getElementById('history-area');
-  const serverList = document.getElementById('server-file-list');
-  const globalLoading = document.getElementById('global-loading');
+  // === BẢO MẬT: API Key - khớp với backend ===
+  const API_KEY = "123456";
+
+  // Khai báo biến toàn cục
   let activeDownloads = 0;
+  let downloadQueue = new Set();
+  let fileSizeCache = new Map();
 
-  // === Kéo thả ===
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => {
-    dropZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); });
-  });
-  ['dragenter', 'dragover'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.add('drag-over')));
-  ['dragleave', 'drop'].forEach(e => dropZone.addEventListener(e, () => dropZone.classList.remove('drag-over')));
+  // ==== Hàm định dạng dung lượng ====
+  // ==== Hàm định dạng dung lượng ====
+function formatFileSize(bytes) {
+    // Kiểm tra nếu bytes không hợp lệ
+    if (bytes === null || bytes === undefined || isNaN(bytes) || bytes < 0) {
+        return "0 B";
+    }
+    
+    bytes = parseInt(bytes); // Đảm bảo là số nguyên
+    
+    if (bytes === 0) return "0 B";
+    
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB"];
+    let i = 0;
+    let size = bytes;
+    
+    while (size >= k && i < sizes.length - 1) {
+        size /= k;
+        i++;
+    }
+    
+    return size.toFixed(1) + " " + sizes[i];
+}
 
-  dropZone.addEventListener('drop', e => {
-    const files = e.dataTransfer.files;
-    if (files.length) handleFiles(files);
-    const name = e.dataTransfer.getData('text/plain');
-    if (name) downloadFile(name);
-  });
-  dropZone.onclick = () => fileInput.click();
-  fileInput.onchange = e => handleFiles(e.target.files);
-
-  function handleFiles(files) {
-    Array.from(files).filter(f => f.name.endsWith('.txt')).forEach(readTxt);
-    fileInput.value = '';
+  // ==== Hàm thêm thông báo ====
+  function addNotification(message, type = 'info') {
+    const historyArea = document.getElementById('history-area');
+    if (!historyArea) {
+      console.error('Không tìm thấy history-area');
+      return;
+    }
+    
+    // Xóa "Chưa có thông báo" nếu có
+    if (historyArea.textContent.includes('Chưa có thông báo')) {
+      historyArea.innerHTML = '';
+    }
+    
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    const timestamp = new Date().toLocaleTimeString();
+    
+    // Icon theo loại thông báo
+    let icon = '📢';
+    if (type === 'success') icon = '✅';
+    if (type === 'error') icon = '❌';
+    if (type === 'warning') icon = '⚠️';
+    if (type === 'download') icon = '📥';
+    
+    notification.innerHTML = `<strong>${icon} [${timestamp}]</strong> ${message}`;
+    
+    // Màu sắc theo loại thông báo
+    if (type === 'success') notification.style.color = '#059669';
+    if (type === 'error') notification.style.color = '#dc2626';
+    if (type === 'warning') notification.style.color = '#d97706';
+    if (type === 'download') notification.style.color = '#2563eb';
+    
+    // Thêm vào đầu danh sách
+    historyArea.prepend(notification);
+    
+    // Tự động scroll lên đầu
+    historyArea.scrollTop = 0;
+    
+    console.log(`Thông báo: ${message}`);
   }
 
-  function readTxt(file) {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const names = e.target.result.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('#'));
-      names.forEach(downloadFile);
-      log(`Tải ${names.length} file từ ${file.name}`);
-    };
-    reader.readAsText(file);
+  // ==== Kéo thả =====
+  function setupDragDrop() {
+    const dropZone = document.getElementById('dropZone');
+    if (!dropZone) {
+      console.error('Không tìm thấy dropZone');
+      return;
+    }
+
+    dropZone.addEventListener('dragover', e => { 
+      e.preventDefault(); 
+      dropZone.classList.add('drag-over'); 
+    });
+    
+    dropZone.addEventListener('dragleave', () => { 
+      dropZone.classList.remove('drag-over'); 
+    });
+    
+    dropZone.addEventListener('drop', e => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+
+      if (e.dataTransfer.files.length) {
+        const txtFiles = Array.from(e.dataTransfer.files).filter(f => f.name.endsWith('.txt'));
+        if (txtFiles.length === 0) {
+          addNotification('Không có file .txt nào được kéo vào', 'warning');
+          return;
+        }
+        
+        txtFiles.forEach(file => {
+          const reader = new FileReader();
+          reader.onload = ev => {
+            const names = ev.target.result.split('\n')
+              .map(l => l.trim())
+              .filter(l => l && !l.startsWith('#'));
+            
+            if (names.length === 0) {
+              addNotification(`File ${file.name} không có tên file hợp lệ`, 'warning');
+              return;
+            }
+            
+            names.forEach(name => addToQueue(name));
+            addNotification(`Đã thêm ${names.length} file từ ${file.name} vào hàng đợi`, 'success');
+          };
+          reader.onerror = () => {
+            addNotification(`Lỗi đọc file ${file.name}`, 'error');
+          };
+          reader.readAsText(file);
+        });
+      } else {
+        const name = e.dataTransfer.getData('text/plain');
+        if (name) {
+          addToQueue(name);
+        }
+      }
+    });
   }
 
-  // === Tải file ===
+  function addToQueue(filename) {
+    if (downloadQueue.has(filename)) {
+      addNotification(`File "${filename}" đã có trong hàng đợi`, 'warning');
+      return;
+    }
+    downloadQueue.add(filename);
+    updateQueueDisplay();
+    addNotification(`Đã thêm vào hàng đợi: ${filename}`, 'info');
+  }
+
+  function updateQueueDisplay() {
+    const queueCountSpan = document.getElementById('queue-count');
+    const queuedFilesDiv = document.getElementById('queued-files');
+    const dropZoneContent = document.getElementById('drop-zone-content');
+    
+    if (!queueCountSpan || !queuedFilesDiv || !dropZoneContent) {
+      console.error('Không tìm thấy phần tử hiển thị hàng đợi');
+      return;
+    }
+
+    queueCountSpan.textContent = downloadQueue.size;
+    queuedFilesDiv.innerHTML = '';
+
+    downloadQueue.forEach(filename => {
+      const div = document.createElement('div');
+      div.className = 'queued-item';
+      const fileSize = fileSizeCache.get(filename);
+      const sizeText = fileSize ? ` (${fileSize.size_formatted})` : '';
+      div.innerHTML = `<span>${filename}${sizeText}</span>`;
+      queuedFilesDiv.appendChild(div);
+    });
+
+    dropZoneContent.style.display = downloadQueue.size === 0 ? 'block' : 'none';
+  }
+
+  function updateGlobalLoading() {
+    const globalLoading = document.getElementById('global-loading');
+    if (globalLoading) {
+      globalLoading.style.width = activeDownloads > 0 ? '70%' : '0%';
+    }
+  }
+
+  // ==== Tải file ====
   function downloadFile(filename) {
     activeDownloads++;
     updateGlobalLoading();
+    
+    const fileInfo = fileSizeCache.get(filename);
+    const totalSize = fileInfo ? fileInfo.size_bytes : 0;
+    const totalSizeFormatted = fileInfo ? fileInfo.size_formatted : 'Đang tải...';
+    
+    addNotification(`Bắt đầu tải file: ${filename} (${totalSizeFormatted})`, 'download');
+    
+    const progressList = document.getElementById('progress-list');
+    if (!progressList) {
+      console.error('Không tìm thấy progress-list');
+      return;
+    }
+
     const id = 'dl-' + Date.now();
     const item = document.createElement('div');
     item.className = 'task-item';
     item.id = id;
-    item.innerHTML = `<div class="task-name">${filename}</div>
-                      <div class="progress-bar"><div class="progress-fill"></div></div>
-                      <div class="task-status status-downloading">Đang tải</div>`;
+    item.innerHTML = `
+      <div class="task-header">
+        <div class="task-name">${filename}</div>
+        <div class="task-size-info">${totalSizeFormatted}</div>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill"></div>
+        </div>
+        <div class="progress-text" id="progress-text-${id}">0% (0 B)</div>
+      </div>
+      <div class="task-status">Đang tải...</div>
+    `;
     progressList.appendChild(item);
 
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', `http://127.0.0.1:5000/download/${encodeURIComponent(filename)}`, true);
+    const encodedFilename = encodeURIComponent(filename);
+    const url = `/api/download/${encodedFilename}`;
+    console.log('Downloading:', filename, '→', url);
+    
+    xhr.open('GET', url, true);
+    xhr.setRequestHeader("X-API-Key", API_KEY);
     xhr.responseType = 'blob';
 
     xhr.onprogress = e => {
       if (e.lengthComputable) {
-        const pct = (e.loaded / e.total) * 100;
-        item.querySelector('.progress-fill').style.width = pct + '%';
+        const pct = Math.round((e.loaded / e.total) * 100);
+        const loadedFormatted = formatFileSize(e.loaded);
+        const totalFormatted = formatFileSize(e.total);
+        
+        const progressFill = item.querySelector('.progress-fill');
+        const progressText = item.querySelector('.progress-text');
+        const taskStatus = item.querySelector('.task-status');
+        
+        if (progressFill) progressFill.style.width = pct + '%';
+        if (progressText) progressText.textContent = `${pct}% (${loadedFormatted})`;
+        if (taskStatus) taskStatus.textContent = `Đang tải... ${loadedFormatted} / ${totalFormatted}`;
       }
     };
 
     xhr.onload = () => {
+      console.log('Download response:', xhr.status, xhr.statusText);
+      const fileSizeHeader = xhr.getResponseHeader('X-File-Size');
+      const actualTotalSize = fileSizeHeader ? parseInt(fileSizeHeader) : totalSize;
+      const actualTotalFormatted = formatFileSize(actualTotalSize);
+      
+      const progressFill = item.querySelector('.progress-fill');
+      const progressText = item.querySelector('.progress-text');
+      const taskStatus = item.querySelector('.task-status');
+      const taskSizeInfo = item.querySelector('.task-size-info');
+      
       if (xhr.status === 200) {
-        const url = URL.createObjectURL(xhr.response);
-        const a = document.createElement('a'); a.href = url; a.download = filename; a.click();
+        const blob = xhr.response;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        done(id, 'success', 'Hoàn tất');
-        log(`Tải thành công: ${filename}`);
+        
+        if (taskStatus) taskStatus.textContent = '✅ Hoàn thành';
+        if (progressFill) {
+          progressFill.style.width = '100%';
+          progressFill.style.background = '#48bb78';
+        }
+        if (progressText) progressText.textContent = `100% (${actualTotalFormatted})`;
+        if (taskSizeInfo) taskSizeInfo.textContent = actualTotalFormatted;
+        
+        addNotification(`✅ Đã tải thành công: ${filename} (${actualTotalFormatted})`, 'success');
       } else {
-        done(id, 'error', 'Lỗi');
-        log(`Tải thất bại: ${filename}`);
+        console.error('Download failed:', xhr.status);
+        if (taskStatus) taskStatus.textContent = `❌ Lỗi ${xhr.status}`;
+        if (progressFill) progressFill.style.background = '#e53e3e';
+        if (progressText) progressText.textContent = `Lỗi ${xhr.status}`;
+        addNotification(`❌ Lỗi tải file "${filename}": HTTP ${xhr.status}`, 'error');
       }
       activeDownloads--;
       updateGlobalLoading();
-      setTimeout(() => item.remove(), 2000);
+      setTimeout(() => {
+        if (document.getElementById(id)) {
+          item.remove();
+        }
+      }, 3000);
     };
 
-    xhr.onerror = () => { done(id, 'error', 'Lỗi mạng'); activeDownloads--; updateGlobalLoading(); };
+    xhr.onerror = () => {
+      const taskStatus = item.querySelector('.task-status');
+      const progressFill = item.querySelector('.progress-fill');
+      const progressText = item.querySelector('.progress-text');
+      
+      if (taskStatus) taskStatus.textContent = '❌ Lỗi kết nối';
+      if (progressFill) progressFill.style.background = '#e53e3e';
+      if (progressText) progressText.textContent = 'Lỗi kết nối';
+      activeDownloads--;
+      updateGlobalLoading();
+      addNotification(`❌ Lỗi kết nối khi tải file: ${filename}`, 'error');
+      setTimeout(() => {
+        if (document.getElementById(id)) {
+          item.remove();
+        }
+      }, 3000);
+    };
+
     xhr.send();
   }
 
-  function done(id, status, text) {
-    const el = document.getElementById(id);
-    if (el) {
-      el.querySelector('.task-status').className = `task-status status-${status}`;
-      el.querySelector('.task-status').textContent = text;
-      el.querySelector('.progress-fill').style.width = status === 'success' ? '100%' : '0%';
-    }
-  }
-
-  function updateGlobalLoading() {
-    const pct = activeDownloads > 0 ? 50 + Math.random() * 30 : 0;
-    globalLoading.style.width = pct + '%';
-  }
-
-  // === Load danh sách file ===
+  // ==== Load danh sách file từ server ====
   async function loadFiles() {
     try {
-      const res = await fetch('http://127.0.0.1:5000/files');
+      addNotification('Đang tải danh sách file từ server...', 'info');
+      
+      const res = await fetch('/api/files', {
+        headers: { "X-API-Key": API_KEY }
+      });
+
+      console.log('Files response:', res.status);
+      
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error('API Key không hợp lệ');
+        }
+        throw new Error(`HTTP ${res.status}`);
+      }
+
       const files = await res.json();
+      console.log('Files loaded:', files);
+      
+      // Cache dung lượng file
+      fileSizeCache.clear();
+      files.forEach(file => {
+        fileSizeCache.set(file.name, file);
+      });
+      
+      const serverList = document.getElementById('server-file-list');
+      if (!serverList) {
+        console.error('Không tìm thấy server-file-list');
+        return;
+      }
+      
       serverList.innerHTML = '';
-      files.forEach(f => {
+      
+      if (files.length === 0) {
+        serverList.innerHTML = '<div style="padding:10px;text-align:center;color:#718096;">Chưa có file nào trong thư mục uploads/</div>';
+        addNotification('Không có file nào trong thư mục uploads', 'warning');
+        return;
+      }
+      
+      // Tính tổng dung lượng - sửa lỗi NaN
+      const totalSizeBytes = files.reduce((sum, file) => {
+        const size = file.size_bytes || 0;
+        return sum + size;
+      }, 0);
+      
+      const totalSizeFormatted = formatFileSize(totalSizeBytes);
+      
+      files.forEach(file => {
         const div = document.createElement('div');
         div.className = 'file-item';
         div.draggable = true;
-        div.dataset.name = f;
-        div.innerHTML = `<input type="checkbox" value="${f}"><span>${f}</span>`;
-        div.ondragstart = e => e.dataTransfer.setData('text/plain', f);
+        div.dataset.name = file.name;
+        div.innerHTML = `
+          <div class="file-info">
+            <input type="checkbox" value="${file.name}">
+            <span>${file.name}</span>
+          </div>
+          <span class="file-size">${file.size_formatted || '0 B'}</span>
+        `;
+        div.ondragstart = e => e.dataTransfer.setData('text/plain', file.name);
         serverList.appendChild(div);
       });
-    } catch { log('Lỗi kết nối server'); }
+
+      // Thêm thông tin tổng dung lượng
+      const totalInfo = document.createElement('div');
+      totalInfo.style.padding = '8px 10px';
+      totalInfo.style.fontSize = '12px';
+      totalInfo.style.color = '#718096';
+      totalInfo.style.textAlign = 'center';
+      totalInfo.style.borderTop = '1px solid #e2e8f0';
+      totalInfo.style.marginTop = '8px';
+      totalInfo.textContent = `Tổng: ${files.length} file, ${totalSizeFormatted}`;
+      serverList.appendChild(totalInfo);
+
+      addNotification(`✅ Đã tải ${files.length} file từ server (${totalSizeFormatted})`, 'success');
+      
+    } catch (error) {
+      console.error("Lỗi kết nối server:", error);
+      const serverList = document.getElementById('server-file-list');
+      if (serverList) {
+        serverList.innerHTML = '<div style="padding:10px;text-align:center;color:#e53e3e;">❌ Lỗi: ' + error.message + '</div>';
+      }
+      addNotification(`❌ Lỗi tải danh sách file: ${error.message}`, 'error');
+    }
   }
 
-  // === Nút điều khiển ===
-  document.getElementById('refresh-btn').onclick = loadFiles;
-  document.getElementById('download-selected').onclick = () => {
-    const selected = [...document.querySelectorAll('input:checked')].map(c => c.value);
-    if (!selected.length) return log('Chưa chọn file');
-    selected.forEach(downloadFile);
-  };
-  document.getElementById('delete-selected').onclick = async () => {
-    const selected = [...document.querySelectorAll('input:checked')].map(c => c.value);
-    if (!selected.length || !confirm(`Xóa ${selected.length} file?`)) return;
-    await fetch('http://127.0.0.1:5000/delete', {
-      method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({files: selected})
-    });
+  // ==== Khởi động ứng dụng ====
+  function initApp() {
+    // Thiết lập event listeners
+    setupDragDrop();
+    
+    const refreshBtn = document.getElementById('refresh-btn');
+    const downloadSelectedBtn = document.getElementById('download-selected');
+    const downloadQueuedBtn = document.getElementById('download-queued');
+    const clearQueuedBtn = document.getElementById('clear-queued');
+    const clearHistoryBtn = document.getElementById('clear-history-button');
+    
+    if (refreshBtn) refreshBtn.onclick = () => {
+      addNotification('Đang làm mới danh sách file...', 'info');
+      loadFiles();
+    };
+
+    if (downloadSelectedBtn) downloadSelectedBtn.onclick = () => {
+      const selected = [...document.querySelectorAll('input:checked')].map(c => c.value);
+      if (selected.length === 0) {
+        addNotification('⚠️ Vui lòng chọn ít nhất 1 file để tải', 'warning');
+        return;
+      }
+      
+      // Tính tổng dung lượng file được chọn
+      const totalSizeBytes = selected.reduce((sum, filename) => {
+        const fileInfo = fileSizeCache.get(filename);
+        const size = fileInfo ? (fileInfo.size_bytes || 0) : 0;
+        return sum + size;
+      }, 0);
+      const totalSizeFormatted = formatFileSize(totalSizeBytes);
+      
+      selected.forEach(addToQueue);
+      addNotification(`Đã thêm ${selected.length} file vào hàng đợi tải (${totalSizeFormatted})`, 'success');
+    };
+
+    if (downloadQueuedBtn) downloadQueuedBtn.onclick = () => {
+      if (downloadQueue.size === 0) {
+        addNotification('⚠️ Hàng đợi tải trống', 'warning');
+        return;
+      }
+      const files = Array.from(downloadQueue);
+      downloadQueue.clear();
+      updateQueueDisplay();
+      
+      // Tính tổng dung lượng hàng đợi
+      const totalSizeBytes = files.reduce((sum, filename) => {
+        const fileInfo = fileSizeCache.get(filename);
+        const size = fileInfo ? (fileInfo.size_bytes || 0) : 0;
+        return sum + size;
+      }, 0);
+      const totalSizeFormatted = formatFileSize(totalSizeBytes);
+      
+      addNotification(`📥 Bắt đầu tải ${files.length} file từ hàng đợi (${totalSizeFormatted})`, 'download');
+      files.forEach(downloadFile);
+    };
+
+    if (clearQueuedBtn) clearQueuedBtn.onclick = () => {
+      if (downloadQueue.size === 0) {
+        addNotification('Hàng đợi đã trống', 'info');
+        return;
+      }
+      const count = downloadQueue.size;
+      downloadQueue.clear();
+      updateQueueDisplay();
+      addNotification(`Đã xóa ${count} file khỏi hàng đợi`, 'info');
+    };
+
+    if (clearHistoryBtn) clearHistoryBtn.onclick = () => {
+      const historyArea = document.getElementById('history-area');
+      if (historyArea) {
+        historyArea.innerHTML = '<div>Chưa có thông báo.</div>';
+      }
+      addNotification('Đã xóa lịch sử thông báo', 'info');
+    };
+
+    // Khởi động
+    addNotification('Ứng dụng đã sẵn sàng', 'success');
     loadFiles();
-    log(`Đã xóa ${selected.length} file`);
-  };
-  document.getElementById('clear-history-button').onclick = () => {
-    historyArea.innerHTML = '<div>Chưa có thông báo.</div>';
-  };
-
-  function log(msg) {
-    const d = document.createElement('div');
-    d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
-    historyArea.appendChild(d);
-    historyArea.scrollTop = historyArea.scrollHeight;
-    if (historyArea.children.length > 30) historyArea.children[0].remove();
+    
+    // Auto refresh mỗi 30 giây
+    setInterval(() => {
+      loadFiles();
+    }, 30000);
   }
 
-  // Khởi động
-  loadFiles();
-  setInterval(loadFiles, 8000);
+  // Chạy khi trang đã load xong
+  document.addEventListener('DOMContentLoaded', initApp);
 </script>
 
 </body>
