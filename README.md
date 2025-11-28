@@ -53,7 +53,7 @@ Server sẽ khởi động tại địa chỉ: `http://127.0.0.1:5000`
 ### Bước 3: Sử dụng Client
 
   * Mở file `index.html` bằng trình duyệt bất kỳ (Chrome, Edge, Firefox).
-  * **Lưu ý:** Không cần chạy qua Live Server, có thể mở trực tiếp vì Backend đã hỗ trợ CORS.
+  * **Lưu ý:** Không chạy qua Live Server (vì mặc định cổng hỗ trợ là 5500).
 
 ## 📝 Hướng dẫn sử dụng
 
