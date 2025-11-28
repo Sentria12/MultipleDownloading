@@ -560,19 +560,4 @@ function formatFileSize(bytes) {
       addNotification('Đã xóa lịch sử thông báo', 'info');
     };
 
-    // Khởi động
-    addNotification('Ứng dụng đã sẵn sàng', 'success');
-    loadFiles();
     
-    // Auto refresh mỗi 30 giây
-    setInterval(() => {
-      loadFiles();
-    }, 30000);
-  }
-
-  // Chạy khi trang đã load xong
-  document.addEventListener('DOMContentLoaded', initApp);
-</script>
-
-</body>
-</html>
