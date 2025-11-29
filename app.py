@@ -5,12 +5,10 @@ from functools import wraps
 
 UPLOAD_DIRECTORY = "uploads"
 app = Flask(__name__)
-
 app.config['UPLOAD_FOLDER'] = UPLOAD_DIRECTORY
 
 # === BẢO MẬT: API Key ===
 API_KEY = "123456"
-
 def require_api_key(f):
     """Decorator kiểm tra API key - CHỈ áp dụng cho API endpoints"""
     @wraps(f)
